@@ -9,7 +9,7 @@ import argparse
 import os
 from sys import exit
 from pyrax import exceptions as e
-
+import logging
 
 # Location of pyrax configuration file
 CREDFILE = "/root/cloudcreds"
@@ -19,6 +19,20 @@ METAKEY = "who"
 METAVALUE = "duncan"
 # Location of your lsyncd configuration file
 LSYNDCONF = "./lsyncd.conf"
+# Where to log files
+LOGPATH = "./"
+
+logFormatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+rootLogger = logging.getLogger()
+rootLogger.setLevel(logging.DEBUG)
+
+fileHandler = logging.FileHandler("{0}/{1}.log".format(LOGPATH, os.path.basename(__file__)))
+fileHandler.setFormatter(logFormatter)
+rootLogger.addHandler(fileHandler)
+
+consoleHandler = logging.StreamHandler()
+consoleHandler.setFormatter(logFormatter)
+rootLogger.addHandler(consoleHandler)
 
 def main():
     # Read in argumants cron command line to over ride defaults
@@ -38,7 +52,7 @@ def main():
                         help=("Metadata value of your lsyncd configuration group"),
                         default=METAVALUE)
     parser.add_argument("-c", "--lsyncdconf", action="store", required=False,
-                        metavar="lsyndconf", type=str,
+                        metavar="lsyncdconf", type=str,
                         help=("The location of your lsyncd configuration file"),
                         default=LSYNDCONF)
 
@@ -60,13 +74,13 @@ def main():
         pyrax.set_credential_file(creds_file, args.region)
     # Exit if authentication fails
     except e.AuthenticationFailed:
-        print ("ERROR: Authentication failed. Please check and confirm "
-               "that the API username, key, and region are in place "
-               "and correct.")
+        rootLogger.critical("ERROR: Authentication failed. Please check and confirm"
+                            "that the API username, key, and region are in place"
+                            "and correct.")
         exit(1)
     # Exit if file does not exist
     except e.FileNotFound:
-        print "ERROR: Credentials file '%s' not found" % (creds_file)
+        rootLogger.critical("ERROR: Credentials file '%s' not found" % (creds_file))
         exit(2)
 
     # Shorten the cloud server invocation string
@@ -97,7 +111,6 @@ def main():
     
     # Create a new empty list which will be used to store IP's found in lsyncd configuration file
     current_conf_ips = []
-
     # Match IP's in lsyncd configuration file
     for match in rexip.finditer(ltext):
         # Append the IP's to your list
@@ -105,19 +118,23 @@ def main():
     
     # Define a function to check if any IP's need updating
     def ipcomp(list1, list2):
+        counter = 0
         for ip in list1:
             if ip in list2:
-                # Return true if both lists of IP's match
-                return True
-            else:
-                # Return false if lists of IP's don't match 
-                return False
-    
-    # If list don't match
-    if not ipcomp(active_ips, current_conf_ips):
-        print "Lsyncd configuration needs updating"
-        print "Current Configured IP's:", current_conf_ips
-        print "Lsyncd configured servers in group:", active_ips
+                counter += 1
+        if counter == len(list2):
+            return True
+        else:
+            return False
+
+    # Check if IP's in configuration file match active servers
+    if ipcomp(active_ips, current_conf_ips) == True:
+        rootLogger.info("No update needed")
+        exit(0)
+    else:
+        rootLogger.warning("Lsyncd configuration needs updating")
+        rootLogger.info( "%s %s", "Current configured IP's in lsyncd config", current_conf_ips)
+        rootLogger.info("%s %s", "Lsyncd servers active in lsyncd group", active_ips)
     
 if __name__ == '__main__':
     main()
