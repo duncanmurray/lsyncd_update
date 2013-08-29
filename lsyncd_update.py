@@ -11,30 +11,31 @@ from sys import exit
 from pyrax import exceptions as e
 import logging
 
-# Location of pyrax configuration file
+# Set location of pyrax configuration file
 CREDFILE = "/root/cloudcreds"
-# Default metadata key that defines a server installed with lsyncd
-METAKEY = "who"
-# Default metadata key of your lsyncd configuration group
-METAVALUE = "duncan"
-# Location of your lsyncd configuration file
-LSYNDCONF = "./lsyncd.conf"
-# Where to log files
+# Set location of log files
 LOGPATH = "./"
-
-logFormatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-rootLogger = logging.getLogger()
-rootLogger.setLevel(logging.DEBUG)
-
-fileHandler = logging.FileHandler("{0}/{1}.log".format(LOGPATH, os.path.basename(__file__)))
-fileHandler.setFormatter(logFormatter)
-rootLogger.addHandler(fileHandler)
-
-consoleHandler = logging.StreamHandler()
-consoleHandler.setFormatter(logFormatter)
-rootLogger.addHandler(consoleHandler)
+# Set default metadata key that defines a server installed with lsyncd
+METAKEY = "who"
+# Set default metadata key of your lsyncd configuration group
+METAVALUE = "duncan"
+# Set default location of your lsyncd configuration file
+LSYNDCONF = "./lsyncd.conf"
 
 def main():
+    # Configure log formatting
+    logFormatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+    rootLogger = logging.getLogger()
+    rootLogger.setLevel(logging.DEBUG)
+    # Configure logging to file
+    fileHandler = logging.FileHandler("{0}/{1}.log".format(LOGPATH, os.path.basename(__file__)))
+    fileHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(fileHandler)
+    # Configure loggign to console
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(consoleHandler)
+
     # Read in argumants cron command line to over ride defaults
     parser = argparse.ArgumentParser(description=("Automatically update lsyncd configuration"))
     parser.add_argument("-r", "--region", action="store", required=False,
@@ -68,20 +69,31 @@ def main():
     # api_key = 01234567890abcdef
     # region = LON
 
-    # Test that the configuration file provided exists
+    # Test that the pyrax configuration file provided exists
     try:
         creds_file = os.path.expanduser(CREDFILE)
         pyrax.set_credential_file(creds_file, args.region)
     # Exit if authentication fails
     except e.AuthenticationFailed:
-        rootLogger.critical("ERROR: Authentication failed. Please check and confirm"
+        rootLogger.critical("Authentication failed. Please check and confirm"
                             "that the API username, key, and region are in place"
                             "and correct.")
         exit(1)
     # Exit if file does not exist
     except e.FileNotFound:
-        rootLogger.critical("ERROR: Credentials file '%s' not found" % (creds_file))
+        rootLogger.critical("Credentials file '%s' not found" % (creds_file))
         exit(2)
+
+    # Define a function to check if any IP's need updating
+    def ipcomp(list1, list2):
+        counter = 0
+        for ip in list1:
+            if ip in list2:
+                counter += 1
+        if counter == len(list2) and counter == len(list1):
+            return True
+        else:
+            return False
 
     # Shorten the cloud server invocation string
     cs = pyrax.cloudservers
@@ -102,6 +114,16 @@ def main():
                 # Grab the private ip address of matching server
                 active_ips.append(server.networks['private'][0])
     
+    # Test if lsyncd configuration file exists
+    try:
+        if os.path.isfile(args.lsyncdconf) == False:
+            rootLogger.warning("%s %s", "Creating empty lsyncd configuration file", args.lsyncdconf)
+            lfile = open(args.lsyncdconf, 'w')
+            lfile.close()
+    except IOError:
+        rootLogger.critical("%s %s", "Cannot create lsyncd configuration file", args.lsyncdconf)
+        exit(3)
+
     # Open lsyncd configuration file as read only
     lfile = open(args.lsyncdconf, 'r')
     # Read in lsyncd configuration file 
@@ -116,17 +138,6 @@ def main():
         # Append the IP's to your list
         current_conf_ips.append(unicode(match.group(0)))
     
-    # Define a function to check if any IP's need updating
-    def ipcomp(list1, list2):
-        counter = 0
-        for ip in list1:
-            if ip in list2:
-                counter += 1
-        if counter == len(list2):
-            return True
-        else:
-            return False
-
     # Check if IP's in configuration file match active servers
     if ipcomp(active_ips, current_conf_ips) == True:
         rootLogger.info("No update needed")
@@ -136,5 +147,16 @@ def main():
         rootLogger.info( "%s %s", "Current configured IP's in lsyncd config", current_conf_ips)
         rootLogger.info("%s %s", "Lsyncd servers active in lsyncd group", active_ips)
     
+        # Test if lsyncd configuration file is writable
+        try:
+            lfile = open(args.lsyncdconf, 'w' )
+        except IOError:
+            rootLogger.critical("%s %s %s", "Lsyncd configuration file", args.lsyncdconf, "is not writable")
+            exit(4)
+        
+        rootLogger.info("Writing new lsyncd configuration file")
+        lfile.write("%s" % active_ips)
+        lfile.close()
+
 if __name__ == '__main__':
     main()
