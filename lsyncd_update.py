@@ -20,7 +20,7 @@ METAKEY = "who"
 # Set default metadata key of your lsyncd configuration group
 METAVALUE = "duncan"
 # Set default location of your lsyncd configuration file
-LSYNDCONF = "./lsyncd.conf"
+LSYNCDCONF = "./lsyncd.conf"
 
 def main():
     # Configure log formatting
@@ -55,7 +55,7 @@ def main():
     parser.add_argument("-c", "--lsyncdconf", action="store", required=False,
                         metavar="lsyncdconf", type=str,
                         help=("The location of your lsyncd configuration file"),
-                        default=LSYNDCONF)
+                        default=LSYNCDCONF)
 
     # Parse arguments (validate user input)
     args = parser.parse_args()
@@ -140,7 +140,7 @@ def main():
     
     # Check if IP's in configuration file match active servers
     if ipcomp(active_ips, current_conf_ips) == True:
-        rootLogger.info("No update needed")
+        rootLogger.info("No lsyncd update needed")
         exit(0)
     else:
         rootLogger.warning("Lsyncd configuration needs updating")
