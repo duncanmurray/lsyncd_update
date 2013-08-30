@@ -21,6 +21,8 @@ METAKEY = "who"
 METAVALUE = "duncan"
 # Set default location of your lsyncd configuration file
 LSYNCDCONF = "./lsyncd.conf"
+# Set default location of lsyncd configuration template
+TEMPLATE = "./template"
 
 def main():
     # Configure log formatting
@@ -56,6 +58,11 @@ def main():
                         metavar="lsyncdconf", type=str,
                         help=("The location of your lsyncd configuration file"),
                         default=LSYNCDCONF)
+    parser.add_argument("-t", "--template", action="store", required=False,
+                        metavar="template", type=str,
+                        help=("The location of your lsyncd configuration template"),
+                        default=TEMPLATE)
+
 
     # Parse arguments (validate user input)
     args = parser.parse_args()
@@ -156,8 +163,15 @@ def main():
         
         rootLogger.info("Writing new lsyncd configuration file")
         
-        # Read in the settings block from configuration template
-        with open('template') as template_file:
+        # Test if lsyncd configuration template exists
+        try:
+            if os.path.isfile(args.template) == False:
+                rootLogger.critical("%s %s", "Unable to find lsyncd template", args.template)
+        except IOError:
+            exit(5)
+ 
+        # Read in the settings block from configuration templatea
+        with open(args.template) as template_file:
             # Set start of block
             for line in template_file:
                 if line.strip() == 'SETTINGS_START':
@@ -168,6 +182,7 @@ def main():
                     break
                 # Write lines to file
                 lfile.write("%s" % line)
+
         print "need to write server block"        
 
 if __name__ == '__main__':
