@@ -155,8 +155,20 @@ def main():
             exit(4)
         
         rootLogger.info("Writing new lsyncd configuration file")
-        lfile.write("%s" % active_ips)
-        lfile.close()
+        
+        # Read in the settings block from configuration template
+        with open('template') as template_file:
+            # Set start of block
+            for line in template_file:
+                if line.strip() == 'SETTINGS_START':
+                    break
+            # Set end of block
+            for line in template_file:
+                if line.strip() == 'SETTINGS_END':
+                    break
+                # Write lines to file
+                lfile.write("%s" % line)
+        print "need to write server block"        
 
 if __name__ == '__main__':
     main()
