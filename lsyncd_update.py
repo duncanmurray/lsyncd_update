@@ -36,24 +36,23 @@ def main():
                               " to 'LON') [ORD, DFW, LON, SYD]") , choices=["ORD", "DFW", "LON", "SYD"],
                         default="LON")
     parser.add_argument("-mk", "--metakey", action="store", required=False,
-                        metavar="metakey", type=str,
-                        help=("Matadata key to search for that identifies lsyncd"
-                              " is installed"), 
+                        metavar="key", type=str,
+                        help=("Matadata key to search for that identifies lsyncd is installed"), 
                         default=METAKEY)
     parser.add_argument("-mv", "--metavalue", action="store", required=False,
-                        metavar="metavalue", type=str,
+                        metavar="value", type=str,
                         help=("Metadata value of your lsyncd configuration group"),
                         default=METAVALUE)
     parser.add_argument("-l", "--lsyncdconf", action="store", required=False,
-                        metavar="lsyncdconf", type=str,
+                        metavar="file", type=str,
                         help=("The location of your lsyncd configuration file"),
                         default=LSYNCDCONF)
     parser.add_argument("-t", "--template", action="store", required=False,
-                        metavar="template", type=str,
+                        metavar="file", type=str,
                         help=("The location of your lsyncd configuration template"),
                         default=TEMPLATE)
     parser.add_argument("-c", "--credfile", action="store", required=False,
-                        metavar="credfile", type=str,
+                        metavar="file", type=str,
                         help=("The location of your pyrax configuration file"),
                         default=CREDFILE)
     parser.add_argument("-v", "--verbose", action="store_true", required=False,
