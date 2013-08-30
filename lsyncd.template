@@ -1,0 +1,21 @@
+SETTINGS_START
+settings {
+    logfile = "/var/log/lsyncd/lsyncd.log",
+    statusFile = "/var/log/lsyncd/lsyncd-status.log",
+    statusInterval = 20,
+    delay = 5
+}
+SETTINGS_END
+SYNC_START
+sync {
+    default.rsync,
+    source="/var/www/",
+    target="IPREPLACE:/var/www/",
+    rsync = {
+        compress = true,
+        archive = true,
+        verbose = true,
+        rsh = "/usr/bin/ssh -p 22 -o StrictHostKeyChecking=no"
+    }
+}
+SYNC_END
