@@ -35,7 +35,8 @@ optional arguments:
 
 1. Download lsyncd.update.py
 ```
-git clone git@github.com:duncanmurray/lsyncd_update.git && cp lsyncd_upate/lsyncd.template /etc/lsyncd.template \
+git clone git@github.com:duncanmurray/lsyncd_update.git \
+&& cp lsyncd_upate/lsyncd.template /etc/lsyncd.template \
 && cp lsyncd_upate/update_lsyncd.py /usr/local/sbin/update_lsyncd.py
 ```
 
