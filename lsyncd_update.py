@@ -19,7 +19,7 @@ LOGPATH = "/var/log/"
 # Set default metadata key that defines a server installed with lsyncd
 METAKEY = "lsyncd"
 # Set default metadata key of your lsyncd configuration group
-METAVALUE = "enabled"
+METAVALUE = "1"
 # Set default location of your lsyncd configuration file
 LSYNCDCONF = "/etc/lsyncd.lua"
 # Set default location of lsyncd configuration template
