@@ -1,6 +1,18 @@
 #!/usr/bin/env python
 
-# Duncan Murray 2013
+# Author: Duncan Murray 2013
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # Import some modules
 import pyrax
@@ -15,7 +27,7 @@ from subprocess import call
 # Set default location of pyrax configuration file
 CREDFILE = "/root/.rackspace_cloud_credentials"
 # Set location of log files
-LOGPATH = "/var/log/"
+LOGPATH = "/var/log/lsyncd/"
 # Set default metadata key that defines a server installed with lsyncd
 METAKEY = "lsyncd"
 # Set default metadata key of your lsyncd configuration group
@@ -55,9 +67,14 @@ def main():
                         metavar="file", type=str,
                         help=("The location of your pyrax configuration file"),
                         default=CREDFILE)
+    parser.add_argument("-p", "--logpath", action="store", required=False,
+                        metavar="directory", type=str,
+                        help=("The directory to create log files in"),
+                        default=LOGPATH)
     parser.add_argument("-v", "--verbose", action="store_true", required=False,
                         help=("Turn on debug verbosity"),
                         default=False)
+    
 
     # Parse arguments (validate user input)
     args = parser.parse_args()
@@ -70,7 +87,7 @@ def main():
     else:
         rootLogger.setLevel(logging.WARNING)
     # Configure logging to file
-    fileHandler = logging.FileHandler("{0}/{1}.log".format(LOGPATH, os.path.basename(__file__)))
+    fileHandler = logging.FileHandler("{0}/{1}.log".format(args.logpath, os.path.basename(__file__)))
     fileHandler.setFormatter(logFormatter)
     rootLogger.addHandler(fileHandler)
     # Configure loggign to console
