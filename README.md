@@ -34,14 +34,18 @@ PREREQUISITS:
 INSTALLATION:
 
 1. Download lsyncd.update.py
+    ```
     git clone git@github.com:duncanmurray/lsyncd_update.git && cp lsyncd_upate/lsyncd.template /etc/lsyncd.template \
     && cp lsyncd_upate/update_lsyncd.py /usr/local/sbin/update_lsyncd.py
+    ```
 2. Download and install pyrax
     pip install pyrax
 4. Create pyrax configuration file "/root/.rackspace_cloud_credentials" 
+    ```
     [rackspace_cloud]
     username = myusername
     api_key = 01234567890abcdef
+    ```
 5. Create cronjob to run update_lsyncd.py
     */2 * * * * /usr/local/sbin/update_lsyncd.py
         
