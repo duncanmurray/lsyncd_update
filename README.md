@@ -92,7 +92,7 @@ Set the location where to write the lsyncd configuration file. The default locat
 Set the location of your pyrax credentials file. This will store your username and API key that is associated with your account. The default location is `/root/.rackspace_cloud_credentials`.
 
 ###### -p <directory>, --logpath <directory>
-Set the directory to log output from the script to. It must exist and be writable by the user running the script.
+Set the directory to log output from the script to. It must exist and be writable by the user running the script. The default location in `/var/log/lsyncd/`.
     
 ######-v, --verbose
 Turn on verbosity. By default logs are written to both the terminal and `/var/log/lsyncd_update.py.log`. Turning on verbose output changes the logging level from `WARNING` to `DEBUG`.
