@@ -235,7 +235,7 @@ def main():
 
         # Restart lsyncd process
         rootLogger.warning("Restarting lsyncd service")
-        call(["/usr/sbin/service", "cron", "restart"])
+        call(["/usr/sbin/service", "lsyncd", "restart"])
 
 if __name__ == '__main__':
     main()
