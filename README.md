@@ -57,9 +57,9 @@ api_key = 01234567890abcdef
 ```
 */2 * * * * /usr/local/sbin/update_lsyncd.py
 ```
-Or better yet use flock untill this script it turned into a deamon. 
+Or better yet use flock until this script it turned into a deamon. 
 ```
-*/2 * * * * flock -n /var/lock/lsyncd_update.py.lock -c "/usr/local/sbin/update_lsyncd.py"
+*/2 * * * * /usr/bin/flock -n /var/lock/lsyncd_update.py.lock -c "/usr/local/sbin/update_lsyncd.py"
 ```
         
 ####OPTIONS EXPLANATION:
