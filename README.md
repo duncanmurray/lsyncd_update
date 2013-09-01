@@ -1,7 +1,7 @@
 lsyncd_update
 =============
 
-An automatic layncd update tool. This tool is used an lsyncd configuration file when new Rackspace Cloud Servers are created that have a predefines metadata key/value pair. 
+An automatic layncd update tool. This tool is used to create an lsyncd configuration file when new Rackspace Cloud Servers are created. It uses metadata key/value pairs to determine if a server should be added into the lsyncd configuration file. 
 
 ```
 usage: lsyncd_update.py [-h] [-r region] [-mk key] [-mv value] [-l file] [-t file] [-c file] [-v]
