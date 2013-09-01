@@ -22,6 +22,8 @@ optional arguments:
                         The location of your lsyncd configuration template
   -c file, --credfile file
                         The location of your pyrax configuration file
+  -p directory, --logpath directory
+                        The directory to create log files in
   -v, --verbose         Turn on debug verbosity
 ```
 
@@ -54,6 +56,10 @@ api_key = 01234567890abcdef
 ```
 */2 * * * * /usr/local/sbin/update_lsyncd.py
 ```
+Or better yet use flock untill this script it turned into a deamon. 
+```
+*/2 * * * * flock -n /var/lock/lsyncd_update.py.lock -c "/usr/local/sbin/update_lsyncd.py"
+```
         
 ####OPTIONS EXPLANATION:
 
@@ -83,6 +89,9 @@ Set the location where to write the lsyncd configuration file. The default locat
     
 ######-c <file>, --credfile <file>
 Set the location of your pyrax credentials file. This will store your username and API key that is associated with your account. The default location is `/root/.rackspace_cloud_credentials`.
+
+###### -p <directory>, --logpath <directory>
+Set the directory to log output from the script to. It must exist and be writable by the user runnin gthe script.
     
 ######-v, --verbose
 Turn on verbosity. By default logs are written to both the terminal and `/var/log/lsyncd_update.py.log`. Turning on verbose output changes the logging level from `WARNING` to `DEBUG`.

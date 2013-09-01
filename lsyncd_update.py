@@ -26,7 +26,7 @@ from subprocess import call
 
 # Set default location of pyrax configuration file
 CREDFILE = "/root/.rackspace_cloud_credentials"
-# Set location of log files
+# Set the default location of log files
 LOGPATH = "/var/log/lsyncd/"
 # Set default metadata key that defines a server installed with lsyncd
 METAKEY = "lsyncd"
@@ -82,18 +82,23 @@ def main():
     # Configure log formatting
     logFormatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
     rootLogger = logging.getLogger()
+    # Check what level we should log with
     if args.verbose:
         rootLogger.setLevel(logging.DEBUG)
     else:
         rootLogger.setLevel(logging.WARNING)
-    # Configure logging to file
-    fileHandler = logging.FileHandler("{0}/{1}.log".format(args.logpath, os.path.basename(__file__)))
-    fileHandler.setFormatter(logFormatter)
-    rootLogger.addHandler(fileHandler)
-    # Configure loggign to console
+    # Configure logging to console
     consoleHandler = logging.StreamHandler()
     consoleHandler.setFormatter(logFormatter)
-    rootLogger.addHandler(consoleHandler)    
+    rootLogger.addHandler(consoleHandler)   
+    # Configure logging to file
+    try:
+        fileHandler = logging.FileHandler("{0}/{1}.log".format(args.logpath, os.path.basename(__file__)))
+        fileHandler.setFormatter(logFormatter)
+        rootLogger.addHandler(fileHandler)
+    except IOError:
+        rootLogger.critical("Unable to write to log file directory '%s'" % (args.logpath))
+        exit(1)
 
     # Define the authentication credentials file location and request that
     # pyrax makes use of it. If not found, let the client/user know about it.
@@ -143,10 +148,13 @@ def main():
     # Create a regex to define what a valid IP looks like and compile it
     rexip = re.compile('(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)')
 
-    # Create an empty list which will be used to store IP's of active servers
-    # matching your metadata search
-    active_ips = []
+    # Test to see if there are any servers active in region
+    if not cs.servers.list():
+        rootLogger.critical("No servers found in region '%s'" % (args.region))
+        exit(3)
 
+    # Create an empty list which will be used to store IP's of active servers matching your metadata search
+    active_ips = []
     # Geta a list of cloud servers
     for server in cs.servers.list():
         # filter out only ACTIVE ones
@@ -155,16 +163,21 @@ def main():
             if args.metakey in server.metadata and server.metadata[args.metakey] == args.metavalue:
                 # Grab the private ip address of matching server
                 active_ips.append(server.networks['private'][0])
-    
+
+    # Check that we found some matching key/value pairs
+    if len(active_ips) == 0:
+        rootLogger.critical("No active servers found matching key/value pair '%s':'%s'" % (args.metakey, args.metavalue))  
+        exit(4)
+
     # Test if lsyncd configuration file exists
     try:
         if os.path.isfile(args.lsyncdconf) == False:
-            rootLogger.warning("%s %s", "Creating empty lsyncd configuration file", args.lsyncdconf)
+            rootLogger.warning("Creating empty lsyncd configuration file '%s'" % (args.lsyncdconf))
             lfile = open(args.lsyncdconf, 'w')
             lfile.close()
     except IOError:
-        rootLogger.critical("%s %s", "Cannot create lsyncd configuration file", args.lsyncdconf)
-        exit(3)
+        rootLogger.critical("Cannot create lsyncd configuration file '%s'" % (args.lsyncdconf))
+        exit(5)
 
     # Open lsyncd configuration file as read only
     lfile = open(args.lsyncdconf, 'r')
@@ -185,25 +198,25 @@ def main():
         rootLogger.info("No lsyncd update needed")
         exit(0)
     else:
-        rootLogger.warning("Lsyncd configuration needs updating")
-        rootLogger.info( "%s %s", "Current configured IP's in lsyncd config", current_conf_ips)
-        rootLogger.info("%s %s", "Lsyncd servers active in lsyncd group", active_ips)
+        rootLogger.warning("Lsyncd configuration file '%s' needs updating" % (args.lsyncdconf))
+        rootLogger.info( "Current configured IP's in lsyncd config '%s': '%s'" % (args.lsyncdconf, current_conf_ips))
+        rootLogger.info("Servers active matching key/value pair '%s':'%s' in '%s': '%s'" % (args.metakey, args.metavalue, args.region, active_ips))
     
         # Test if lsyncd configuration file is writable
         try:
             lfile = open(args.lsyncdconf, 'w' )
         except IOError:
-            rootLogger.critical("%s %s %s", "Lsyncd configuration file", args.lsyncdconf, "is not writable")
-            exit(4)
+            rootLogger.critical("Lsyncd configuration file '%s' is not writable" % (args.lsyncdconf))
+            exit(6)
         
-        rootLogger.info("Writing new lsyncd configuration file")
+        rootLogger.info("Writing new lsyncd configuration file '%s'" % (args.lsyncdconf))
         
         # Test if lsyncd configuration template exists
         try:
             if os.path.isfile(args.template) == False:
-                rootLogger.critical("%s %s", "Unable to find lsyncd template", args.template)
+                rootLogger.critical("Unable to find lsyncd template: '%s'" % (args.template))
         except IOError:
-            exit(5)
+            exit(7)
  
         # Read in the settings block from configuration templatea
         with open(args.template) as template_file:
