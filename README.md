@@ -24,7 +24,8 @@ optional arguments:
                         The location of your pyrax configuration file
   -p directory, --logpath directory
                         The directory to create log files in
-  -v, --verbose         Turn on debug verbosity
+  -v, --verbose         
+                        Turn on debug verbosity
 ```
 
 ####PREREQUISITS:
