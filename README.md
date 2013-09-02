@@ -4,28 +4,30 @@ lsyncd_update
 An automatic layncd update tool. This tool is used to create an lsyncd configuration file when new Rackspace Cloud Servers are created. It uses metadata key/value pairs to determine if a server should be added into the lsyncd configuration file. 
 
 ```
-usage: lsyncd_update.py [-h] [-r region] [-mk key] [-mv value] [-l file] [-t file] [-c file] [-v]
+usage: lsyncd_update.py [-h] [-r REGION] [-mk META_KEY] [-mv META_VALUE]
+                        [-l LSYNCD_FILE] [-t LSYNCD_TEMPLATE]
+                        [-c CREDENTIALS_FILE] [-p LOG_DIRECTORY] [-v]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -r region, --region region
+  -r REGION, --region REGION
                         Region where your lsyncd configuration group is
                         (defaults to 'LON') [ORD, DFW, LON, SYD]
-  -mk key, --metakey key
+  -mk META_KEY, --metakey META_KEY
                         Matadata key to search for that identifies lsyncd is
                         installed
-  -mv value, --metavalue value
+  -mv META_VALUE, --metavalue META_VALUE
                         Metadata value of your lsyncd configuration group
-  -l file, --lsyncdconf file
+  -l LSYNCD_FILE, --lsyncdconf LSYNCD_FILE
                         The location of your lsyncd configuration file
-  -t file, --template file
+  -t LSYNCD_TEMPLATE, --template LSYNCD_TEMPLATE
                         The location of your lsyncd configuration template
-  -c file, --credfile file
+  -c CREDENTIALS_FILE, --credfile CREDENTIALS_FILE
                         The location of your pyrax configuration file
-  -p directory, --logpath directory
+  -p LOG_DIRECTORY, --logpath LOG_DIRECTORY
                         The directory to create log files in
-  -v, --verbose         
-                        Turn on debug verbosity
+  -v, --verbose         Turn on debug verbosity
+
 ```
 
 ####PREREQUISITS:
@@ -47,7 +49,7 @@ git clone git@github.com:duncanmurray/lsyncd_update.git \
 ```
 pip install pyrax
 ```
-4. Create pyrax configuration file "/root/.rackspace_cloud_credentials" 
+4. Create pyrax configuration file "~/.rackspace_cloud_credentials" 
 ```
 [rackspace_cloud]
 username = myusername
@@ -74,10 +76,10 @@ Shows a help message about the commands options
 Select the Rackspace data center of the servers you want to automatically update an lsyncd configuration file for.
     
 ######-mk <key>, --metakey <key>
-Set the metadata key that is common to all your cloud servers in the same working group. For example this could be `WebServers`. The default if none is provided is `lsyncd`.
+Set the metadata key that is common to all your cloud servers in the same working group. For example this could be `WebServers`. The default if none is provided is `MyGroup0`.
 
 ######-mv <value>, --metavalue <value>
-Set the metadata value that is paired with the key that you provided. For example this could be `lsyncd_ON`. The default value if none is provided is `1`.
+Set the metadata value that is paired with the key that you provided. For example this could be `lsyncd_ON`. The default value if none is provided is `lsyncd`.
     
 ######-l <file>, --lsyncdconf <file>
 Set the location where you want to write your lsyncd configuration. This can be different depending on the operating system. The default location is `/etc/lsyncd.lua`.
@@ -89,7 +91,7 @@ Set the location of your lsyncd configuration template. Since this program was d
 Set the location where to write the lsyncd configuration file. The default location is `/etc/lsyncd.lua`. Depending on your operating system this may be different.
     
 ######-c <file>, --credfile <file>
-Set the location of your pyrax credentials file. This will store your username and API key that is associated with your account. The default location is `/root/.rackspace_cloud_credentials`.
+Set the location of your pyrax credentials file. This will store your username and API key that is associated with your account. The default location is `~/.rackspace_cloud_credentials`.
 
 ###### -p <directory>, --logpath <directory>
 Set the directory to log output from the script to. It must exist and be writable by the user running the script. The default location in `/var/log/lsyncd/`.

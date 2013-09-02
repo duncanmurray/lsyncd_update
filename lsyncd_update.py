@@ -25,13 +25,13 @@ import logging
 from subprocess import call
 
 # Set default location of pyrax configuration file
-CREDFILE = "/root/.rackspace_cloud_credentials"
+CREDFILE = "~/.rackspace_cloud_credentials"
 # Set the default location of log files
 LOGPATH = "/var/log/lsyncd/"
 # Set default metadata key that defines a server installed with lsyncd
-METAKEY = "lsyncd"
+METAKEY = "MyGroup0"
 # Set default metadata key of your lsyncd configuration group
-METAVALUE = "1"
+METAVALUE = "lsyncd"
 # Set default location of your lsyncd configuration file
 LSYNCDCONF = "/etc/lsyncd.lua"
 # Set default location of lsyncd configuration template
@@ -43,32 +43,32 @@ def main():
     # No arguments are required and all can be over riden
     parser = argparse.ArgumentParser(description=("Automatically update lsyncd configuration"))
     parser.add_argument("-r", "--region", action="store", required=False,
-                        metavar="region", type=str,
+                        metavar="REGION", type=str,
                         help=("Region where your lsyncd configuration group is (defaults"
                               " to 'LON') [ORD, DFW, LON, SYD]") , choices=["ORD", "DFW", "LON", "SYD"],
                         default="LON")
     parser.add_argument("-mk", "--metakey", action="store", required=False,
-                        metavar="key", type=str,
+                        metavar="META_KEY", type=str,
                         help=("Matadata key to search for that identifies lsyncd is installed"), 
                         default=METAKEY)
     parser.add_argument("-mv", "--metavalue", action="store", required=False,
-                        metavar="value", type=str,
+                        metavar="META_VALUE", type=str,
                         help=("Metadata value of your lsyncd configuration group"),
                         default=METAVALUE)
     parser.add_argument("-l", "--lsyncdconf", action="store", required=False,
-                        metavar="file", type=str,
+                        metavar="LSYNCD_FILE", type=str,
                         help=("The location of your lsyncd configuration file"),
                         default=LSYNCDCONF)
     parser.add_argument("-t", "--template", action="store", required=False,
-                        metavar="file", type=str,
+                        metavar="LSYNCD_TEMPLATE", type=str,
                         help=("The location of your lsyncd configuration template"),
                         default=TEMPLATE)
     parser.add_argument("-c", "--credfile", action="store", required=False,
-                        metavar="file", type=str,
+                        metavar="CREDENTIALS_FILE", type=str,
                         help=("The location of your pyrax configuration file"),
                         default=CREDFILE)
     parser.add_argument("-p", "--logpath", action="store", required=False,
-                        metavar="directory", type=str,
+                        metavar="LOG_DIRECTORY", type=str,
                         help=("The directory to create log files in"),
                         default=LOGPATH)
     parser.add_argument("-v", "--verbose", action="store_true", required=False,
@@ -231,9 +231,24 @@ def main():
                 # Write lines to file
                 lfile.write("%s" % line)
         
+#        # Read in the sync block(s) from the configuration template
+#        with open(args.template) as template_file:
+#            for ip in active_ips:
+#                for line in template_file:
+#                    # Set start block
+#                    if line.strip() == 'SYNC_START':
+#                        break
+#                for line in template_file:
+#                    # Set end block
+#                    if line.strip() == 'SYNC_END':
+#                        break
+#                    # Replace IPREPLACE with active ip's
+#                    lfile.write("%s" % line.replace('IPREPLACE', ip))
+
+
         # Read in the sync block(s) from the configuration template
-        with open(args.template) as template_file:
-            for ip in active_ips:
+        for ip in active_ips:
+            with open(args.template) as template_file:
                 for line in template_file:
                     # Set start block
                     if line.strip() == 'SYNC_START':
@@ -244,7 +259,8 @@ def main():
                         break
                     # Replace IPREPLACE with active ip's
                     lfile.write("%s" % line.replace('IPREPLACE', ip))
-                lfile.close()
+
+        lfile.close()
 
         # Restart lsyncd process
         rootLogger.warning("Restarting lsyncd service")
