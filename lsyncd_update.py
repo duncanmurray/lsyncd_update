@@ -231,21 +231,6 @@ def main():
                 # Write lines to file
                 lfile.write("%s" % line)
         
-#        # Read in the sync block(s) from the configuration template
-#        with open(args.template) as template_file:
-#            for ip in active_ips:
-#                for line in template_file:
-#                    # Set start block
-#                    if line.strip() == 'SYNC_START':
-#                        break
-#                for line in template_file:
-#                    # Set end block
-#                    if line.strip() == 'SYNC_END':
-#                        break
-#                    # Replace IPREPLACE with active ip's
-#                    lfile.write("%s" % line.replace('IPREPLACE', ip))
-
-
         # Read in the sync block(s) from the configuration template
         for ip in active_ips:
             with open(args.template) as template_file:
@@ -259,7 +244,7 @@ def main():
                         break
                     # Replace IPREPLACE with active ip's
                     lfile.write("%s" % line.replace('IPREPLACE', ip))
-
+        # Close lsyncd configuration file
         lfile.close()
 
         # Restart lsyncd process
