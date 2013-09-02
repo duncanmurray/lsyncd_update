@@ -97,7 +97,7 @@ def main():
         fileHandler.setFormatter(logFormatter)
         rootLogger.addHandler(fileHandler)
     except IOError:
-        rootLogger.critical("Unable to write to log file directory '%s'" % (args.logpath))
+        rootLogger.critical("Unable to write to log file directory '%s'." % (args.logpath))
         exit(1)
 
     # Define the authentication credentials file location and request that
@@ -126,7 +126,6 @@ def main():
                                  [rackspace_cloud]
                                  username = myuseername
                                  api_key = 01sdf444g3ffgskskeoek0349
-                                 region = LON
                               """
                        )
         exit(2)
@@ -167,6 +166,7 @@ def main():
     # Check that we found some matching key/value pairs
     if len(active_ips) == 0:
         rootLogger.critical("No active servers found matching key/value pair '%s':'%s'" % (args.metakey, args.metavalue))  
+        rootLogger.info("Not making and changes, consider maybe disabling lsyncd")
         exit(4)
 
     # Test if lsyncd configuration file exists

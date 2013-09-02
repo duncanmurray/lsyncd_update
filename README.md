@@ -57,13 +57,25 @@ api_key = 01234567890abcdef
 ```
 5. Create cronjob to run update_lsyncd.py
 ```
-*/2 * * * * /usr/local/sbin/update_lsyncd.py
+*/2 * * * * /usr/local/sbin/update_lsyncd.py -v
 ```
 Or better yet use flock until this script it turned into a deamon. 
 ```
-*/2 * * * * /usr/bin/flock -n /var/lock/lsyncd_update.py.lock -c "/usr/local/sbin/update_lsyncd.py"
+*/2 * * * * /usr/bin/flock -n /var/lock/lsyncd_update.py.lock -c "/usr/local/sbin/update_lsyncd.py -v"
 ```
-        
+6. Don't forget to rotate your logs if you havn't already. A sample lsyncd log rotation script for `/etc/logrotate.d/lsyncd`.
+```
+/var/log/lsyncd/*log {
+    missingok
+    notifempty
+    sharedscripts
+    postrotate
+    if [ -f /var/lock/lsyncd ]; then
+      /sbin/service lsyncd restart > /dev/null 2>/dev/null || true
+    fi
+    endscript
+}
+```        
 ####OPTIONS EXPLANATION:
 
 Although no options are required to be passed to the program the defaults can be over ridden with the below flags.
