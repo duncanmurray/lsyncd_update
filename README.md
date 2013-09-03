@@ -81,7 +81,7 @@ Or better yet use flock until this script it turned into a deamon.
 Although no options are required to be passed to the program the defaults can be over ridden with the below flags.
 
 
-######-h, --help**
+######-h, --help
 Shows a help message about the commands options
     
 ######-r <region>, --region <region>
