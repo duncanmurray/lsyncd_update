@@ -99,9 +99,6 @@ Set the location where you want to write your lsyncd configuration. This can be 
 ######-t <file>, --template <file>
 Set the location of your lsyncd configuration template. Since this program was designed to work with multiple versions of lsyncd, you must provide a file that stores the lsyncd settigns and the sync blocks to use. This allows you to setup multiple directories to watch. The settings block starts when a line is found containing only `SETTINGS_START`. The end of the settings block is defines by a line containing `SETTINGS_END`. The sync block starts when a line is found containing `SYNC_START` and ends with a line containing only `SYNC_END`. The program will search for `IPREPLACE` in the sync block and replace it with he IP of each active server. You only need to create one sync block for each directory watched and the script will populate the lsyncd configuration file with one for each active server. The default location of the lsyncd template file is "/etc/lsyncd.template"
 
-######-l <file>, --lsyncdconf <file>
-Set the location where to write the lsyncd configuration file. The default location is `/etc/lsyncd.lua`. Depending on your operating system this may be different.
-    
 ######-c <file>, --credfile <file>
 Set the location of your pyrax credentials file. This will store your username and API key that is associated with your account. The default location is `~/.rackspace_cloud_credentials`.
 
