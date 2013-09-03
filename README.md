@@ -40,7 +40,7 @@ optional arguments:
 
 1. Download lsyncd.update.py
 ```
-git clone git@github.com:duncanmurray/lsyncd_update.git \
+git clone https://github.com/duncanmurray/lsyncd_update.git \
 && cp lsyncd_upate/lsyncd.template /etc/lsyncd.template \
 && cp lsyncd_upate/lsyncd_update.py /usr/local/sbin/lsyncd_update.py
 ```
