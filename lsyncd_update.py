@@ -109,6 +109,9 @@ def main():
     # api_key = 01234567890abcdef
     # region = LON
 
+    # Set pyrax identity type
+    pyrax.set_setting("identity_type", "rackspace")   
+
     # Test that the pyrax configuration file provided exists
     try:
         creds_file = os.path.expanduser(args.credfile)
