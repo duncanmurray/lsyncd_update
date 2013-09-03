@@ -254,11 +254,18 @@ def main():
         rootLogger.warning("Restarting lsyncd service")
         # Set environment variables for subprocess
         my_env ={"PATH": "/usr/bin:/usr/sbin:/bin:/sbin"}
-        # Restart lsyncd
-        restart = subprocess.Popen(["service lsyncd restart"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=my_env)
-        output, err = restart.communicate()
-        # Log any output that we get back from stderr or stdout
-        rootLogger.info("stderr: '%s', stdout: '%s'" % (err, output))
+
+        # Attempt to restart lsyncd
+        retcode = subprocess.call(["service lsyncd restart"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=my_env)
+
+        # Successful if return code is 0
+        if retcode == 0:
+            rootLogger.warning("Lsyncd restart successful")
+            exit(0)
+        # Failure if non zero return code
+        else: 
+            rootLogger.critical("Lsyncd restart FAILED. Non zero return code.")
+            exit(8)
 
 if __name__ == '__main__':
     main()
