@@ -23,6 +23,7 @@ from sys import exit
 from pyrax import exceptions as e
 import logging
 from subprocess import call
+import subprocess
 
 # Set default location of pyrax configuration file
 CREDFILE = "~/.rackspace_cloud_credentials"
@@ -75,7 +76,7 @@ def main():
                         help=("Turn on debug verbosity"),
                         default=False)
     
-
+   
     # Parse arguments (validate user input)
     args = parser.parse_args()
 
@@ -109,8 +110,7 @@ def main():
     # api_key = 01234567890abcdef
     # region = LON
 
-    # Set pyrax identity type
-    pyrax.set_setting("identity_type", "rackspace")   
+    pyrax.set_setting("identity_type", "rackspace")
 
     # Test that the pyrax configuration file provided exists
     try:
@@ -250,9 +250,15 @@ def main():
         # Close lsyncd configuration file
         lfile.close()
 
-        # Restart lsyncd process
+        # Notify that we need to restart
         rootLogger.warning("Restarting lsyncd service")
-        call(["/usr/sbin/service", "lsyncd", "restart"])
+        # Set environment variables for subprocess
+        my_env ={"PATH": "/usr/bin:/usr/sbin:/bin:/sbin"}
+        # Restart lsyncd
+        restart = subprocess.Popen(["service lsyncd restart"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=my_env)
+        output, err = restart.communicate()
+        # Log any output that we get back from stderr or stdout
+        rootLogger.info("stderr: '%s', stdout: '%s'" % (err, output))
 
 if __name__ == '__main__':
     main()
