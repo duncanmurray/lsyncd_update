@@ -42,7 +42,7 @@ optional arguments:
 ```
 git clone https://github.com/duncanmurray/lsyncd_update.git \
 && cp lsyncd_upate/lsyncd.template /etc/lsyncd.template \
-&& cp lsyncd_upate/lsyncd_update.py /usr/local/sbin/lsyncd_update.py
+&& cp lsyncd_update/lsyncd_update.py /usr/local/sbin/lsyncd_update.py
 ```
 
 2. Download and install pyrax
