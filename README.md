@@ -42,7 +42,7 @@ optional arguments:
 ```
 git clone git@github.com:duncanmurray/lsyncd_update.git \
 && cp lsyncd_upate/lsyncd.template /etc/lsyncd.template \
-&& cp lsyncd_upate/update_lsyncd.py /usr/local/sbin/update_lsyncd.py
+&& cp lsyncd_upate/lsyncd_update.py /usr/local/sbin/lsyncd_update.py
 ```
 
 2. Download and install pyrax
@@ -55,13 +55,13 @@ pip install pyrax
 username = myusername
 api_key = 01234567890abcdef
 ```
-5. Create cronjob to run update_lsyncd.py
+5. Create cronjob to run lsyncd_update.py
 ```
-*/2 * * * * /usr/local/sbin/update_lsyncd.py -v
+*/2 * * * * /usr/local/sbin/lsyncd_update.py -v
 ```
 Or better yet use flock until this script it turned into a deamon. 
 ```
-*/2 * * * * /usr/bin/flock -n /var/lock/lsyncd_update.py.lock -c "/usr/local/sbin/update_lsyncd.py -v"
+*/2 * * * * /usr/bin/flock -n /var/lock/lsyncd_update.py.lock -c "/usr/local/sbin/lsyncd_update.py -v"
 ```
 6. Don't forget to rotate your logs if you havn't already. A sample lsyncd log rotation script for `/etc/logrotate.d/lsyncd`.
 ```
