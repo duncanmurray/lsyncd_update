@@ -46,7 +46,7 @@ def main():
     parser.add_argument("-r", "--region", action="store", required=False,
                         metavar="REGION", type=str,
                         help=("Region where your lsyncd configuration group is (defaults"
-                              " to 'LON') [ORD, DFW, LON, SYD]") , choices=["ORD", "DFW", "LON", "SYD"],
+                              " to 'LON') [ORD, DFW, LON, SYD, IAD]") , choices=["ORD", "DFW", "LON", "SYD", "IAD"],
                         default="LON")
     parser.add_argument("-mk", "--metakey", action="store", required=False,
                         metavar="META_KEY", type=str,
