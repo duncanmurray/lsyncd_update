@@ -88,10 +88,10 @@ Shows a help message about the commands options
 Select the Rackspace data center of the servers you want to automatically update an lsyncd configuration file for.
     
 ######-mk <key>, --metakey <key>
-Set the metadata key that is common to all your cloud servers in the same working group. For example this could be `WebServers`. The default if none is provided is `MyGroup0`.
+Set the metadata key that is common to all your cloud servers in the same working group. For example this could be `WebServers`. The default if none is provided is `MyGroup0_lsyncd`.
 
 ######-mv <value>, --metavalue <value>
-Set the metadata value that is paired with the key that you provided. For example this could be `lsyncd_ON`. The default value if none is provided is `lsyncd`.
+Set the metadata value that is paired with the key that you provided. The default value if none is provided is `lsyncd_slave`.
     
 ######-l <file>, --lsyncdconf <file>
 Set the location where you want to write your lsyncd configuration. This can be different depending on the operating system. The default location is `/etc/lsyncd.lua`.

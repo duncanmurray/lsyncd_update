@@ -30,9 +30,9 @@ CREDFILE = "~/.rackspace_cloud_credentials"
 # Set the default location of log files
 LOGPATH = "/var/log/lsyncd/"
 # Set default metadata key that defines a server installed with lsyncd
-METAKEY = "MyGroup0"
+METAKEY = "MyGroup0_lsyncd"
 # Set default metadata key of your lsyncd configuration group
-METAVALUE = "lsyncd"
+METAVALUE = "lsyncd_slave"
 # Set default location of your lsyncd configuration file
 LSYNCDCONF = "/etc/lsyncd.lua"
 # Set default location of lsyncd configuration template
