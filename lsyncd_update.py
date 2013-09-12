@@ -40,8 +40,7 @@ TEMPLATE = "/etc/lsyncd.template"
 
 def main():
 
-    # Read in argumants cron command line to over ride defaults
-    # No arguments are required and all can be over riden
+    # Read in argumants fron command line to over ride defaults
     parser = argparse.ArgumentParser(description=("Automatically update lsyncd configuration"))
     parser.add_argument("-r", "--region", action="store", required=False,
                         metavar="REGION", type=str,
@@ -110,6 +109,7 @@ def main():
     # api_key = 01234567890abcdef
     # region = LON
 
+    # Set identity type as rackspace
     pyrax.set_setting("identity_type", "rackspace")
 
     # Test that the pyrax configuration file provided exists
@@ -133,7 +133,7 @@ def main():
                        )
         exit(2)
 
-    # Define a function to check if any IP's need updating
+    # Define a function to check if we will need to add or remove ip's from lsyncd configuration
     def ipcomp(list1, list2):
         counter = 0
         for ip in list1:
@@ -150,29 +150,30 @@ def main():
     # Create a regex to define what a valid IP looks like and compile it
     rexip = re.compile('(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)')
 
-    # Test to see if there are any servers active in region
+    # Test to see if there are any servers active in our region
     if not cs.servers.list():
         rootLogger.critical("No servers found in region '%s'" % (args.region))
         exit(3)
 
     # Create an empty list which will be used to store IP's of active servers matching your metadata search
     active_ips = []
-    # Geta a list of cloud servers
+    # Get a list of cloud servers
     for server in cs.servers.list():
         # filter out only ACTIVE ones
         if server.status == 'ACTIVE':
             # Check for servers that match both your meta key and value
             if args.metakey in server.metadata and server.metadata[args.metakey] == args.metavalue:
-                # Grab the private ip address of matching server
+                # Grab the private ip address of matching server(s)
                 active_ips.append(server.networks['private'][0])
 
-    # Check that we found some matching key/value pairs
+    # Check that we found some matching key/value pairs from our servers
     if len(active_ips) == 0:
+        # If we don't find and matched exit without changing anything
         rootLogger.critical("No active servers found matching key/value pair '%s':'%s'" % (args.metakey, args.metavalue))  
         rootLogger.info("Not making and changes, consider maybe disabling lsyncd")
         exit(4)
 
-    # Test if lsyncd configuration file exists
+    # Test if the lsyncd configuration file exists
     try:
         if os.path.isfile(args.lsyncdconf) == False:
             rootLogger.warning("Creating empty lsyncd configuration file '%s'" % (args.lsyncdconf))
@@ -198,9 +199,11 @@ def main():
     
     # Check if IP's in configuration file match active servers
     if ipcomp(active_ips, current_conf_ips) == True:
+        # If we don't need to update let the user know
         rootLogger.info("No lsyncd update needed")
         exit(0)
     else:
+        # If we need to update let the user know
         rootLogger.warning("Lsyncd configuration file '%s' needs updating" % (args.lsyncdconf))
         rootLogger.info( "Current configured IP's in lsyncd config '%s': '%s'" % (args.lsyncdconf, current_conf_ips))
         rootLogger.info("Servers active matching key/value pair '%s':'%s' in '%s': '%s'" % (args.metakey, args.metavalue, args.region, active_ips))
@@ -212,6 +215,7 @@ def main():
             rootLogger.critical("Lsyncd configuration file '%s' is not writable" % (args.lsyncdconf))
             exit(6)
         
+        # Let the user know that we're going to write a new configuration file
         rootLogger.info("Writing new lsyncd configuration file '%s'" % (args.lsyncdconf))
         
         # Test if lsyncd configuration template exists
