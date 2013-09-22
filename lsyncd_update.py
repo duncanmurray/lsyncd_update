@@ -196,7 +196,9 @@ def main():
     for match in rexip.finditer(ltext):
         # Append the IP's to your list
         current_conf_ips.append(unicode(match.group(0)))
-    
+    # Remove duplicate IP's from list
+    current_conf_ips = list(set(current_conf_ips)) 
+
     # Check if IP's in configuration file match active servers
     if ipcomp(active_ips, current_conf_ips) == True:
         # If we don't need to update let the user know
